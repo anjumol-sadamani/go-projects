@@ -13,15 +13,17 @@ import (
 
 func main() {
 
-	duration := flag.Int("time", 25, "duration for timeout")
+	duration := flag.Int("time", 20, "duration for timeout")
 	fileName := flag.String("file", "problems.csv", "The CSV file to use for the quiz")
-	records := readFileForQuiz(*fileName)
-
 	flag.Parse()
-	timeout := time.After(time.Duration(*duration) * time.Second)
+
 	stop := make(chan struct{})
 	done := make(chan struct{})
 	count := 0
+
+	records := readFileForQuiz(*fileName)
+
+	timeout := time.After(time.Duration(*duration) * time.Second)
 
 	go func() {
 		quiz(records, stop, done, &count)
@@ -40,10 +42,10 @@ func main() {
 }
 
 func readFileForQuiz(fileName string) [][]string {
-
 	file, err := os.Open(fileName)
 	if err != nil {
 		log.Fatalf("Failed to open file: %s", err)
+		os.Exit(1)
 	}
 	defer file.Close()
 	reader := csv.NewReader(file)
@@ -62,7 +64,6 @@ func quiz(records [][]string, stop chan struct{}, done chan struct{}, count *int
 		case <-stop:
 			fmt.Println("Quiz stopped due to timeout")
 			return
-
 		default:
 			fmt.Println(record[0])
 			input := readInputFromUser()
