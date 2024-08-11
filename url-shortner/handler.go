@@ -3,7 +3,6 @@ package urlshort
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -32,7 +31,6 @@ func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	err := yaml.Unmarshal(yml, &pathURLs)
 	if err != nil {
 		log.Fatalf("error while parsing %s", err)
-		os.Exit(1)
 	}
 	pathsToUrls := map[string]string{}
 
